@@ -12,7 +12,7 @@ import redis
 import xarray as xr
 from aio_pika.abc import AbstractIncomingMessage
 
-from src.rise.app.api.client.troute import run_troute
+#from src.rise.app.api.client.troute import run_troute
 from src.rise.app.core.cache import get_settings
 from src.rise.app.core.exceptions import ManyToOneError
 from src.rise.app.core.logging_module import setup_logger
@@ -246,9 +246,9 @@ class ReplaceAndRoute:
             await message.ack()
             return
 
-        domain_files_json = self.create_troute_domains(
-            mapped_feature_id, json_data, output_forcing_path
-        )
+        # domain_files_json = self.create_troute_domains(
+        #     mapped_feature_id, json_data, output_forcing_path
+        # )
 
         if domain_files_json["status"] == "OK":
             try:
@@ -276,17 +276,17 @@ class ReplaceAndRoute:
                 0
             ]  # Using t0 as initial start since no obs
 
-        try:
-            _ = self.troute(
-                lid=lid,
-                mapped_feature_id=mapped_feature_id,
-                feature_id=feature_id,
-                initial_start=initial_start,
-                json_data=json_data,
-            )  # Using feature_id to reference the gpkg file
-        except Exception as e:
-            log.error(f"Error using T-Route: {feature_id}. {e.__str__()}")
-            await message.ack()
+        # try:
+        #     _ = self.troute(
+        #         lid=lid,
+        #         mapped_feature_id=mapped_feature_id,
+        #         feature_id=feature_id,
+        #         initial_start=initial_start,
+        #         json_data=json_data,
+        #     )  # Using feature_id to reference the gpkg file
+        # except Exception as e:
+        #     log.error(f"Error using T-Route: {feature_id}. {e.__str__()}")
+        #     await message.ack()
 
         plot_file_json = self.create_plot_file(
             json_data=json_data,
@@ -305,7 +305,7 @@ class ReplaceAndRoute:
         json_data: Dict[str, Any],
         mapped_feature_id: int,
         is_flooding: bool,
-        troute_file_dir: str = settings.troute_output_format,
+        #troute_file_dir: str = settings.troute_output_format,
         rise_dir: str = settings.rise_output_path,
     ):
         rise_output_path = Path(rise_dir.format(json_data["lid"]))
@@ -334,10 +334,10 @@ class ReplaceAndRoute:
             formatted_timestamps.append(formatted_timestamp)
             t += timedelta(hours=1)
 
-        dataset_names = [
-            troute_file_dir.format(json_data["lid"], formatted_timestamp)
-            for formatted_timestamp in formatted_timestamps
-        ]
+        # dataset_names = [
+        #     troute_file_dir.format(json_data["lid"], formatted_timestamp)
+        #     for formatted_timestamp in formatted_timestamps
+        # ]
         stage_idx = 0
         for idx, file_name in enumerate(dataset_names):
             ds = xr.open_dataset(file_name, engine="netcdf4").copy(deep=True)
@@ -387,40 +387,40 @@ class ReplaceAndRoute:
             )
         return {"status": "OK"}
 
-    def troute(
-        self,
-        lid: str,
-        mapped_feature_id: str,
-        feature_id: str,
-        initial_start: float,
-        json_data: Dict[str, Any],
-    ):
-        unique_dates = set()
-        for time_str in json_data["times"]:
-            date = datetime.strptime(time_str, "%Y-%m-%dT%H:%M:%S")
-            unique_dates.add(date.date())
+    # def troute(
+    #     self,
+    #     lid: str,
+    #     mapped_feature_id: str,
+    #     feature_id: str,
+    #     initial_start: float,
+    #     json_data: Dict[str, Any],
+    # ):
+    #     unique_dates = set()
+    #     for time_str in json_data["times"]:
+    #         date = datetime.strptime(time_str, "%Y-%m-%dT%H:%M:%S")
+    #         unique_dates.add(date.date())
 
-        num_forecast_days = (
-            len(unique_dates) - 1
-        )  # the set ending is inclusive, we want exclusive
+    #     num_forecast_days = (
+    #         len(unique_dates) - 1
+    #     )  # the set ending is inclusive, we want exclusive
 
-        response = run_troute(
-            lid=lid,
-            feature_id=feature_id,
-            mapped_feature_id=mapped_feature_id,
-            initial_start=initial_start,
-            start_time=json_data["times"][0],
-            num_forecast_days=num_forecast_days,
-            base_url=settings.base_troute_url,
-        )
-        return response
+    #     response = run_troute(
+    #         lid=lid,
+    #         feature_id=feature_id,
+    #         mapped_feature_id=mapped_feature_id,
+    #         initial_start=initial_start,
+    #         start_time=json_data["times"][0],
+    #         num_forecast_days=num_forecast_days,
+    #         base_url=settings.base_troute_url,
+    #     )
+    #     return response
 
     def create_plot_file(
         self,
         json_data: Dict[str, Any],
         mapped_feature_id: int,
         mapped_ds_feature_id: int,
-        troute_file_dir: str = settings.troute_output_format,
+        #troute_file_dir: str = settings.troute_output_format,
         plot_dir: str = settings.plot_path,
     ):
         try:
@@ -453,38 +453,38 @@ class ReplaceAndRoute:
             formatted_timestamps.append(formatted_timestamp)
             t += timedelta(hours=1)
 
-        troute_flow = []
-        troute_time_delta = []
-        troute_ds_flow = []
+        #troute_flow = []
+        #troute_time_delta = []
+        #troute_ds_flow = []
         depth_upstream = []
         depth_downstream = []
         dataset_names = [
-            troute_file_dir.format(json_data["lid"], timestamp)
+            #troute_file_dir.format(json_data["lid"], timestamp)
             for timestamp in formatted_timestamps
         ]
         for file_name in dataset_names:
             ds = xr.open_dataset(file_name, engine="netcdf4")
-            troute_flow.append(ds.sel(feature_id=int(mapped_feature_id)).flow.values[0])
-            troute_ds_flow.append(
-                ds.sel(feature_id=int(mapped_ds_feature_id)).flow.values[0]
-            )
-            depth_upstream.append(
-                ds.sel(feature_id=int(mapped_feature_id)).depth.values[0]
-            )
-            depth_downstream.append(
-                ds.sel(feature_id=int(mapped_ds_feature_id)).depth.values[0]
-            )
-            troute_time_delta.append(
-                datetime.strptime(Path(file_name).stem.split("_")[-1], "%Y%m%d%H%M")
-            )
+            #troute_flow.append(ds.sel(feature_id=int(mapped_feature_id)).flow.values[0])
+            # troute_ds_flow.append(
+            #     ds.sel(feature_id=int(mapped_ds_feature_id)).flow.values[0]
+            # )
+            # depth_upstream.append(
+            #     ds.sel(feature_id=int(mapped_feature_id)).depth.values[0]
+            # )
+            # depth_downstream.append(
+            #     ds.sel(feature_id=int(mapped_ds_feature_id)).depth.values[0]
+            # )
+            # troute_time_delta.append(
+            #     datetime.strptime(Path(file_name).stem.split("_")[-1], "%Y%m%d%H%M")
+            # )
             ds.close()
 
-        troute_flow_kcfs = [
-            float(flow_value) * 35.3147 / 1000 for flow_value in troute_flow
-        ]  # converting to kcfs
-        troute_ds_flow_kcfs = [
-            float(flow_value) * 35.3147 / 1000 for flow_value in troute_ds_flow
-        ]  # converting to kcfs
+        # troute_flow_kcfs = [
+        #     float(flow_value) * 35.3147 / 1000 for flow_value in troute_flow
+        # ]  # converting to kcfs
+        # troute_ds_flow_kcfs = [
+        #     float(flow_value) * 35.3147 / 1000 for flow_value in troute_ds_flow
+        # ]  # converting to kcfs
 
         depth_upstream_feet = [
             float(depth_value) / 3.28084 for depth_value in depth_upstream
@@ -517,14 +517,14 @@ class ReplaceAndRoute:
             label=f"RFC {json_data['lid']} Forecasted flows",
         )
         ax1.plot(
-            troute_time_delta,
-            troute_flow_kcfs,
+            #troute_time_delta,
+            #troute_flow_kcfs,
             c="blue",
             label="Upstream T-Routed Output at RFC point",
         )
         ax1.plot(
-            troute_time_delta,
-            troute_ds_flow_kcfs,
+            #troute_time_delta,
+            #troute_ds_flow_kcfs,
             c="tab:blue",
             label="Downstream T-Routed Output",
         )
@@ -536,13 +536,13 @@ class ReplaceAndRoute:
         )
 
         ax2.plot(
-            troute_time_delta,
+            #troute_time_delta,
             depth_upstream_feet,
             c="blue",
             label="Upstream T-Route Flow Height at RFC point",
         )
         ax2.plot(
-            troute_time_delta,
+            #troute_time_delta,
             depth_downstream_feet,
             c="tab:blue",
             label="Downstream T-Route Flow Height",
