@@ -4,8 +4,6 @@ from pathlib import Path
 from pydantic import ConfigDict
 from pydantic_settings import BaseSettings
 
-from src.rise.app.core.utils import read_config
-
 
 class Settings(BaseSettings):
     """
@@ -45,19 +43,7 @@ class Settings(BaseSettings):
 
     api_v1_str: str = "/api/v1"
 
-    base_url: str = "https://api.water.noaa.gov/ForecastService/v1"
-
-    # download_dir: Path = Path.cwd().parents[1] / "data"
-    output_file: str = "{}_output.gpkg"
-    csv_forcing_path: Path = Path("/app/data/rise_channel_forcings/")
-    plot_path: str = "/app/data/plots/{}"
-    #troute_output_path: str = "/app/data/troute_output/"
-    rise_output_path: str = "/app/data/rise/{}"
-    rise_output_file: str = "rise.t{}z.medium_range.channel_rt.nc"
-
     rate_limit: int = 8
-
-    pika_url: str = "localhost"
 
     rabbitmq_default_username: str = "guest"
     rabbitmq_default_password: str = "guest"
@@ -68,19 +54,10 @@ class Settings(BaseSettings):
     redis_url: str = "localhost"
     project_name: str = "RISE"
 
-    priority_queue: str = "flooded_data_queue"
-    base_queue: str = "non_flooded_data_queue"
+    base_queue: str = "rise_queue"
     error_queue: str = "error_queue"
 
     log_path: str = "/app/data/logs"
-
-    #troute_output_format: str = "/app/data/troute_output/{}/troute_output_{}.nc"
-    processed_output_form: str = "nwc.{0}"
-    forcing_regex: str = "\d{12}\.CHRTOUT_DOMAIN1"
-    hydro_rst_datetime_format: str = "%Y-%m-%d_%H:00"
-    #forecast_output = f'replace_route/{ana_datetime_str[:-4]}/forecasts/{ana_datetime_str[-4:-2]}Z_run_issue_times.csv'
-    #troute_output = f'replace_route/{ana_datetime_str[:-4]}/wrf_hydro/{os.path.basename(f)}'
-    forecast_output: str = "replace_route/{}/forecasts/{}Z_run_issue_times.csv"
 
     model_config = ConfigDict(extra="allow", arbitrary_types_allowed=True)
 
@@ -88,11 +65,6 @@ class Settings(BaseSettings):
         super(Settings, self).__init__(**data)
         if os.getenv("RABBITMQ_HOST") is not None:
             self.rabbitmq_default_host = os.getenv("RABBITMQ_HOST")
-
-        try:
-            config = read_config("config.ini")
-        except FileNotFoundError:
-            pass
 
         self.aio_pika_url = self.aio_pika_url.format(
             self.rabbitmq_default_username,

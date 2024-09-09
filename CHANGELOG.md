@@ -2,11 +2,11 @@ All notable changes to this project will be documented in this file.
 We follow the [Semantic Versioning 2.0.0](http://semver.org/) format.
 
 
-## x.y.z - YYYY-MM-DD
+## 0.0.1 - 09/09/2024
 
 ### Added
 
-- Lorem ipsum dolor sit amet
+- Implemented the initial event driven architecture for RISE
 
 ### Deprecated
 
