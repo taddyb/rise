@@ -4,7 +4,6 @@ services:
     build: 
       context: .
       dockerfile: Dockerfile.app
-    # image: ghcr.io/taddyb33/hydrovis/rise:0.0.1
     ports:
       - "8000:8000"
     environment:
@@ -16,8 +15,8 @@ services:
         source: ./data
         target: /app/data
     depends_on:
-      redis:
-        condition: service_started
+      # redis:
+      #   condition: service_started
       rabbitmq:
         condition: service_healthy
     command: sh -c ". /app/.venv/bin/activate && uvicorn src.rise.app.main:app --host 0.0.0.0 --port 8000"
@@ -43,27 +42,10 @@ services:
       - REDIS_URL=redis
     command: sh -c ". /app/.venv/bin/activate && python src/rise/app/consumer_manager.py"
     depends_on:
-      redis:
-        condition: service_started
+      # redis:
+      #   condition: service_started
       rabbitmq:
         condition: service_healthy
-
-  # frontend:
-  #   build: 
-  #     context: .
-  #     dockerfile: Dockerfile.app
-  #   # image: ghcr.io/taddyb33/hydrovis/rise:0.0.1
-  #   volumes:
-  #     - type: bind
-  #       source: ./data
-  #       target: /app/data
-  #     - type: bind
-  #       source: ./static
-  #       target: /app/static
-  #       read_only: true
-  #   ports:
-  #     - "8001:8000"
-  #   command: sh -c ". /app/.venv/bin/activate && uvicorn src.rise.frontend.main:app --host 0.0.0.0 --port 8000"
 
   rabbitmq:
     image: rabbitmq:3.13-management
@@ -76,7 +58,7 @@ services:
       timeout: 10s
       retries: 5
 
-  redis:
-    image: redis:7.2.5
-    ports:
-      - "6379:6379"
+  # redis:
+  #   image: redis:7.2.5
+  #   ports:
+  #     - "6379:6379"

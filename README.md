@@ -1,28 +1,14 @@
 ## RISE: Real-time Inundation mapping using the SFINCS Engine 
 
-**Description**:  Put a meaningful, short, plain-language description of what
-this project is trying to accomplish and why it matters.
-Describe the problem(s) this project solves.
-Describe how this software can improve the lives of its audience.
-
-Other things to include:
-
-  - **Technology stack**: Indicate the technological nature of the software, including primary programming language(s) and whether the software is intended as standalone or as a module in a framework or other ecosystem.
-  - **Status**:  Alpha, Beta, 1.1, etc. It's OK to write a sentence, too. The goal is to let interested people know where this project is at. This is also a good place to link to the [CHANGELOG](CHANGELOG.md).
-  - **Links to production or demo instances**
-  - Describe what sets this apart from related-projects. Linking to another doc or page is OK if this can't be expressed in a sentence or two.
-
-
-**Screenshot**: If the software has visual components, place a screenshot after the description; e.g.,
-
-![](https://raw.githubusercontent.com/NOAA-OWP/owp-open-source-project-template/master/doc/Screenshot.png)
-
+**Description**:  A near-real time FIM Forecasting System that delivers integreated forecast FIM outputs derived in part from operational OWP FIM capabilities
 
 ## Dependencies
 
-Describe any dependencies that must be installed for this software to work.
-This includes programming languages, databases or other storage mechanisms, build tools, frameworks, and so forth.
-If specific versions of other software are required, or known not to work, call that out.
+### SFINCS:
+- The internal physics solver for this code is the SFINCS: https://sfincs.readthedocs.io/en/latest/
+
+### HydroMT
+- To run SFINCS, hydromt is used: https://deltares.github.io/hydromt_sfincs/latest/index.html
 
 ## Installation
 

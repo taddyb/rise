@@ -45,16 +45,6 @@ class Settings(BaseSettings):
 
     api_v1_str: str = "/api/v1"
 
-    base_url: str = "https://api.water.noaa.gov/ForecastService/v1"
-
-    # download_dir: Path = Path.cwd().parents[1] / "data"
-    output_file: str = "{}_output.gpkg"
-    csv_forcing_path: Path = Path("/app/data/rise_channel_forcings/")
-    plot_path: str = "/app/data/plots/{}"
-    #troute_output_path: str = "/app/data/troute_output/"
-    rise_output_path: str = "/app/data/rise/{}"
-    rise_output_file: str = "rise.t{}z.medium_range.channel_rt.nc"
-
     rate_limit: int = 8
 
     pika_url: str = "localhost"
