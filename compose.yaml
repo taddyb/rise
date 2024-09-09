@@ -1,0 +1,82 @@
+services:
+
+  app:
+    build: 
+      context: .
+      dockerfile: Dockerfile.app
+    # image: ghcr.io/taddyb33/hydrovis/rise:0.0.1
+    ports:
+      - "8000:8000"
+    environment:
+      - PIKA_URL=rabbitmq
+      - RABBITMQ_HOST=rabbitmq
+      - REDIS_URL=redis
+    volumes:
+      - type: bind
+        source: ./data
+        target: /app/data
+    depends_on:
+      redis:
+        condition: service_started
+      rabbitmq:
+        condition: service_healthy
+    command: sh -c ". /app/.venv/bin/activate && uvicorn src.rise.app.main:app --host 0.0.0.0 --port 8000"
+    healthcheck:
+      test: curl --fail -I http://localhost:8000/health || exit 1
+      interval: 90s
+      timeout: 5s
+      retries: 3
+      start_period: 5s
+
+  consumer:
+    build:
+      context: .
+      dockerfile: Dockerfile.app
+    restart: always
+    volumes:
+      - type: bind
+        source: ./data
+        target: /app/data
+    environment:
+      - PIKA_URL=rabbitmq
+      - RABBITMQ_HOST=rabbitmq
+      - REDIS_URL=redis
+    command: sh -c ". /app/.venv/bin/activate && python src/rise/app/consumer_manager.py"
+    depends_on:
+      redis:
+        condition: service_started
+      rabbitmq:
+        condition: service_healthy
+
+  # frontend:
+  #   build: 
+  #     context: .
+  #     dockerfile: Dockerfile.app
+  #   # image: ghcr.io/taddyb33/hydrovis/rise:0.0.1
+  #   volumes:
+  #     - type: bind
+  #       source: ./data
+  #       target: /app/data
+  #     - type: bind
+  #       source: ./static
+  #       target: /app/static
+  #       read_only: true
+  #   ports:
+  #     - "8001:8000"
+  #   command: sh -c ". /app/.venv/bin/activate && uvicorn src.rise.frontend.main:app --host 0.0.0.0 --port 8000"
+
+  rabbitmq:
+    image: rabbitmq:3.13-management
+    ports:
+      - "5672:5672"
+      - "15672:15672"
+    healthcheck:
+      test: [ "CMD", "rabbitmqctl", "status" ]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+
+  redis:
+    image: redis:7.2.5
+    ports:
+      - "6379:6379"
