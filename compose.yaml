@@ -57,6 +57,25 @@ services:
       timeout: 10s
       retries: 5
 
+  jupyterlab:
+    build:
+      context: .
+      dockerfile: Dockerfile.notebook
+    volumes:
+      - type: bind
+        source: ./notebooks
+        target: /app/notebooks
+      - type: bind
+        source: ./data
+        target: /app/data
+    environment:
+      - PIKA_URL=rabbitmq
+      - RABBITMQ_HOST=rabbitmq
+    ports:
+      - "8888:8888"
+    command: jupyter-lab --NotebookApp.token=''
+
+
   # redis:
   #   image: redis:7.2.5
   #   ports:

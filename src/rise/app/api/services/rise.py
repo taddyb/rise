@@ -13,7 +13,7 @@ import xarray as xr
 from aio_pika.abc import AbstractIncomingMessage
 
 from src.rise.app.core.cache import get_settings
-from rise.rnr.app.core.logging_module import setup_logger
+from src.rise.app.core.logging_module import setup_logger
 
 settings = get_settings()
 

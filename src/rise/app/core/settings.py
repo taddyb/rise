@@ -4,8 +4,6 @@ from pathlib import Path
 from pydantic import ConfigDict
 from pydantic_settings import BaseSettings
 
-from src.rise.app.core.utils import read_config
-
 
 class Settings(BaseSettings):
     """

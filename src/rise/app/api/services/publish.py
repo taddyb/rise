@@ -17,7 +17,7 @@ log = setup_logger("default", "publisher.log")
 class MessagePublisherService:
 
     @staticmethod
-    async def process_and_publish_messages(
+    async def publish_forecast(
         lid: str,
         settings: Settings,
     ) -> None:

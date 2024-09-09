@@ -1,5 +1,4 @@
 import asyncio
-import configparser
 import logging
 import time
 from datetime import datetime, timezone
@@ -45,29 +44,6 @@ def convert_to_m3_per_sec(forecast: List[float], unit: str) -> Tuple[List[float]
         return forecast, "m3 s-1"
     else:
         raise ValueError(f"Unit conversion not supported for {unit}")
-
-
-# def read_config(config_file_name: str) -> configparser.ConfigParser:
-#     """Reads an .ini file
-
-#     Returns
-#     -------
-#     configparser.ConfigParser
-#     - The configuration parser object
-
-#     Raises
-#     ------
-#     FileNotFoundError:
-#     - If there is no config file found
-#     """
-#     cwd = Path(__file__).resolve().parent
-#     config = configparser.ConfigParser()
-#     config_path = cwd / config_file_name
-#     if not config_path.exists():
-#         msg = f"Config.ini file not located for DB read. Path using is: {config_path}"
-#         raise FileNotFoundError(msg)
-#     config.read(config_path)
-#     return config
 
 
 class AsyncRateLimiter:
