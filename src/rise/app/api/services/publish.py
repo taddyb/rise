@@ -5,7 +5,7 @@ import json
 from src.rise.app.core.logging_module import setup_logger
 from src.rise.app.core.rabbit_connection import rabbit_connection
 from src.rise.app.schemas import ProcessedData
-# from src.rise.app.core.settings import Settings
+from src.rise.app.core.settings import Settings
 
 
 log = setup_logger("default", "publisher.log")
@@ -18,7 +18,8 @@ class MessagePublisherService:
 
     @staticmethod
     async def process_and_publish_messages(
-        lid: str
+        lid: str,
+        settings: Settings,
     ) -> None:
         processed_data = ProcessedData(lid=lid)
         message = json.dumps(processed_data.model_dump_json())

@@ -17,8 +17,8 @@ async def publish_single_message(
     lid: str = "default",
 ) -> PublishSingleMessage:
 
-    async def _publish(entry):
-        return await MessagePublisherService.publish_forecast(lid)
+    async def _publish():
+        return await MessagePublisherService.publish_forecast(lid, settings)
 
     background_tasks.add_task(_publish)
 

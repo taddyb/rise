@@ -7,7 +7,6 @@ services:
     ports:
       - "8000:8000"
     environment:
-      - PIKA_URL=rabbitmq
       - RABBITMQ_HOST=rabbitmq
       - REDIS_URL=redis
     volumes:
