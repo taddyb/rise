@@ -6,6 +6,7 @@ from src.rise.app.core.cache import get_settings
 
 settings = get_settings()
 
+
 def setup_logger(name: str, log_file: str, level=logging.INFO):
     """
     Function to setup as many loggers as you want with date-based rotation

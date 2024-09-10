@@ -75,6 +75,13 @@ services:
       - "8888:8888"
     command: jupyter-lab --NotebookApp.token=''
 
+  
+  sfincs:
+    image: deltares/sfincs-cpu
+    volumes:  
+      - type: bind
+        source: ./data/SFINCS/tmp_sfincs_compound
+        target: /data
 
   # redis:
   #   image: redis:7.2.5

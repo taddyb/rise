@@ -1,11 +1,12 @@
 import json
 
-# import redis
-
 from src.rise.app.core.logging_module import setup_logger
 from src.rise.app.core.rabbit_connection import rabbit_connection
-from src.rise.app.schemas import ProcessedData
 from src.rise.app.core.settings import Settings
+from src.rise.app.schemas import ProcessedData
+
+# import redis
+
 
 
 log = setup_logger("default", "publisher.log")
@@ -14,8 +15,8 @@ log = setup_logger("default", "publisher.log")
 
 # r_cache = redis.Redis(host=_settings.redis_url, port=6379, decode_responses=True)
 
-class MessagePublisherService:
 
+class MessagePublisherService:
     @staticmethod
     async def publish_forecast(
         lid: str,
