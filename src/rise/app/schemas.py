@@ -1,5 +1,7 @@
-from pydantic import BaseModel
 from enum import IntEnum
+
+from pydantic import BaseModel
+
 
 class HTTPStatus(IntEnum):
     """Enumeration of common HTTP status codes.
@@ -15,6 +17,7 @@ class HTTPStatus(IntEnum):
     INTERNAL_SERVER_ERROR : int
         500 - The server encountered an unexpected condition
     """
+
     OK = 200
     BAD_REQUEST = 400
     NOT_FOUND = 404
@@ -28,16 +31,18 @@ class PublishSingleMessage(BaseModel):
     -----------
     status: HTTPStatus
         The HTTP status of the request
-    message: str 
+    message: str
         The message to be displayed
     lid: str
         The location we're publishing data for
     """
+
     status: HTTPStatus
-    message: str 
+    message: str
     lid: str
 
+
 class ProcessedData(BaseModel):
-    """The message to be sent to the consumer
-    """
+    """The message to be sent to the consumer"""
+
     lid: str

@@ -16,17 +16,11 @@ async def publish_single_message(
     settings: Annotated[Settings, Depends(get_settings)],
     lid: str = "default",
 ) -> PublishSingleMessage:
-
     async def _publish():
         return await MessagePublisherService.publish_forecast(lid, settings)
 
     background_tasks.add_task(_publish)
 
-
     return PublishSingleMessage(
-        status=HTTPStatus.OK, 
-        message="Published message successfully",
-        lid=lid
+        status=HTTPStatus.OK, message="Published message successfully", lid=lid
     )
-
-

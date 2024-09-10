@@ -27,6 +27,7 @@ dependencies = [
     "matplotlib==3.9.0",
     "netcdf4==1.6.5",
     "hydromt-sfincs==1.1.0",
+    "docker==7.1.0",
 ]
 readme = "README.md"
 requires-python = ">= 3.9"

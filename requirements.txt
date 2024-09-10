@@ -58,6 +58,8 @@ cycler==0.12.1
     # via matplotlib
 dask==2024.8.2
     # via hydromt
+docker==7.1.0
+    # via rise (pyproject.toml)
 exceptiongroup==1.2.2
     # via
     #   anyio
@@ -250,6 +252,7 @@ redis==5.0.7
     # via rise (pyproject.toml)
 requests==2.32.3
     # via
+    #   docker
     #   hydromt
     #   pooch
 rioxarray==0.17.0
@@ -303,7 +306,9 @@ tzdata==2024.1
 universal-pathlib==0.2.5
     # via hydromt
 urllib3==2.2.2
-    # via requests
+    # via
+    #   docker
+    #   requests
 uvicorn==0.30.1
     # via rise (pyproject.toml)
 xarray==2024.3.0
