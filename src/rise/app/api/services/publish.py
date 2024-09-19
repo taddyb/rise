@@ -8,7 +8,6 @@ from src.rise.app.schemas import ProcessedData
 # import redis
 
 
-
 log = setup_logger("default", "publisher.log")
 
 # _settings = get_settings()
