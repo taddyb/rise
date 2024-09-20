@@ -6,3 +6,7 @@ pandas==2.2.2
 numpy==1.26.3
 contextily==1.6.1
 cartopy
+hydromt 
+hydromt_sfincs 
+zarr
+networkx

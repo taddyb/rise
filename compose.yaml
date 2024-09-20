@@ -10,9 +10,19 @@ services:
       - type: bind
         source: ./data
         target: /app/data
+      - /var/run/docker.sock:/var/run/docker.sock 
     environment:
       - PIKA_URL=rabbitmq
       - RABBITMQ_HOST=rabbitmq
     ports:
       - "8888:8888"
-    command: jupyter-lab --NotebookApp.token=''
+    command: jupyter-lab --NotebookApp.token='' --allow-root
+    user: root
+
+  sfincs:
+    image: deltares/sfincs-cpu
+    volumes:  
+      - type: bind
+        source: ./data/SFINCS/ngwpc_data
+        target: /data
+    command: tail -f /dev/null  # This keeps the container running without executing SFINCS
