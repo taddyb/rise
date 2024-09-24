@@ -19,10 +19,8 @@ services:
     command: jupyter-lab --NotebookApp.token='' --allow-root
     user: root
 
-  sfincs:
-    image: deltares/sfincs-cpu
-    volumes:  
-      - type: bind
-        source: ./data/SFINCS/ngwpc_data
-        target: /data
-    command: tail -f /dev/null  # This keeps the container running without executing SFINCS
+
+
+
+
+
