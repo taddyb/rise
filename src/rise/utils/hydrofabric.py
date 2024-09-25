@@ -8,8 +8,7 @@ from pyogrio.errors import DataLayerError
 
 
 def get_hydrofabric_vpu_graph(
-    nexus: gpd.GeoDataFrame, 
-    flowlines: gpd.GeoDataFrame
+    nexus: gpd.GeoDataFrame, flowlines: gpd.GeoDataFrame
 ) -> nx.DiGraph:
     G = nx.DiGraph()
     nexus_to_toid = dict(zip(nexus["id"], nexus["toid"]))

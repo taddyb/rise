@@ -32,19 +32,11 @@ if [ "$ENABLE_SERVERLESS" = true ]; then
       'http://localhost:8000/api/v1/publish/start/' \
       -H 'accept: application/json'
 
-    echo "Waiting 20 seconds for outputs to process"
-    sleep 5
-    echo "Waiting 15 seconds for outputs to process"
-    sleep 5
-    echo "Waiting 10 seconds for outputs to process"
-    sleep 5
-    echo "Waiting 5 seconds for outputs to process"
-    sleep 5
+    sleep 2
 fi
 
 echo "Pulling image"
 docker pull deltares/sfincs-cpu:sfincs-v2.0.3-Cauberg
-#docker pull mvanormondt/sfincs_cpu:dollerup_2.1.1
 
 echo "Copying data"
 rm -rf /tmp/sfincs_temp/ && mkdir /tmp/sfincs_temp/
@@ -52,10 +44,7 @@ cp -r data/SFINCS/ngwpc_data /tmp/sfincs_temp/
 
 echo "Running SFINCS"
 sudo chmod -R 777 /tmp/sfincs_temp/
-
-docker run -v /tmp/sfincs_temp/ngwpc_data/:/data:rw deltares/sfincs-cpu:sfincs-v2.0.3-Cauberg
-#docker run -v /tmp/sfincs_temp/ngwpc_data/:/data:rw mvanormondt/sfincs-cpu:dollerup_2.1.1
-
+# docker run -v /tmp/sfincs_temp/ngwpc_data/:/data:rw deltares/sfincs-cpu:sfincs-v2.0.3-Cauberg
 sudo chmod -R 777 /tmp/sfincs_temp/
 
 echo "Copying Data"
