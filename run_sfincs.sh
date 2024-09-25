@@ -44,7 +44,6 @@ fi
 
 echo "Pulling image"
 docker pull deltares/sfincs-cpu:sfincs-v2.0.3-Cauberg
-#docker pull mvanormondt/sfincs_cpu:dollerup_2.1.1
 
 echo "Copying data"
 rm -rf /tmp/sfincs_temp/ && mkdir /tmp/sfincs_temp/
@@ -54,7 +53,6 @@ echo "Running SFINCS"
 sudo chmod -R 777 /tmp/sfincs_temp/
 
 docker run -v /tmp/sfincs_temp/ngwpc_data/:/data:rw deltares/sfincs-cpu:sfincs-v2.0.3-Cauberg
-#docker run -v /tmp/sfincs_temp/ngwpc_data/:/data:rw mvanormondt/sfincs-cpu:dollerup_2.1.1
 
 sudo chmod -R 777 /tmp/sfincs_temp/
 
