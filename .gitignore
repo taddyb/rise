@@ -79,3 +79,4 @@ dist/
 # RISE #
 ########
 data/
+*.ipynb_checkpoints
