@@ -32,14 +32,14 @@ if [ "$ENABLE_SERVERLESS" = true ]; then
       'http://localhost:8000/api/v1/publish/start/' \
       -H 'accept: application/json'
 
-    echo "Waiting 20 seconds for outputs to process"
-    sleep 5
-    echo "Waiting 15 seconds for outputs to process"
-    sleep 5
-    echo "Waiting 10 seconds for outputs to process"
-    sleep 5
-    echo "Waiting 5 seconds for outputs to process"
-    sleep 5
+    # Wait for the sfincs.inp file to be created
+    FILE_PATH="data/SFINCS/ngwpc_data/sfincs.inp"
+    echo "Waiting for sfincs.inp to be created..."
+ 
+    while [ ! -f "$FILE_PATH" ]; do
+        sleep 5  # Wait 5 seconds before checking again
+        echo "sfincs.inp not found yet. Retrying..."
+    done
 fi
 
 echo "Pulling image"
