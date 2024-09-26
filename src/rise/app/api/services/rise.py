@@ -7,7 +7,7 @@ import geopandas as gpd
 import numpy as np
 import pandas as pd
 from aio_pika.abc import AbstractIncomingMessage
-from hydromt_sfincs import SfincsModel, utils, workflows
+from hydromt_sfincs import SfincsModel, utils
 from shapely.ops import unary_union
 
 from src.rise.app.core.logging_module import setup_logger
@@ -35,7 +35,7 @@ class RISE:
         sf = SfincsModel(data_libs=[data_lib], root=root_dir, mode="w+")
 
         # huc_8 = "11070103"
-        start_node = "nex-2177032"
+        start_node = "nex-2175874"
         end_node = "nex-2175887"
 
         file_path = Path.cwd() / "data/NWM/nextgen_11.gpkg"
@@ -45,6 +45,13 @@ class RISE:
         )
 
         log.info("Setting up Model Grid")
+
+        merged_polygon = unary_union(_subset_divides["geometry"])
+        merged_gdf = gpd.GeoDataFrame(
+            geometry=[merged_polygon], crs=_subset_divides.crs
+        )
+        output_divides = Path.cwd() / "data/NWM/flowlines_divides.geojson"
+        merged_gdf.to_file(output_divides, driver="GeoJSON")
 
         sf.setup_grid_from_region(
             region={
@@ -60,17 +67,12 @@ class RISE:
         datasets_dep = [{"elevtn": "10m_lidar", "zmin": 0.001}]
         _ = sf.setup_dep(datasets_dep=datasets_dep)
 
-        merged_polygon = unary_union(_subset_divides["geometry"])
-        merged_gdf = gpd.GeoDataFrame(
-            geometry=[merged_polygon], crs=_subset_divides.crs
-        )
-        output_divides = "/app/data/NWM/flowlines_divides.geojson"
-        merged_gdf.to_file(output_divides, driver="GeoJSON")
+        # outflow_polygon = _subset_divides[_subset_divides["id"] == "wb-2175886"]
+        _outflow_nexus = _subset_nexus[_subset_nexus["id"] == "nex-2175887"]
 
-        outflow_polygon = _subset_divides[_subset_divides["id"] == "wb-2175886"]
         sf.setup_mask_active(include_mask=merged_gdf, reset_mask=True)
         sf.setup_mask_bounds(
-            btype="waterlevel", include_mask=outflow_polygon, reset_bounds=True
+            btype="waterlevel", include_mask=_outflow_nexus, reset_bounds=True
         )
 
         sf.setup_river_inflow(rivers=_subset_flowlines, keep_rivers_geom=True)
@@ -83,7 +85,7 @@ class RISE:
             "NWM_VERSION": "nwm30",
             "VARIABLE_NAME": "streamflow",
             "START_DATE": datetime(2019, 5, 20),
-            "END_DATE": datetime(2019, 5, 28),
+            "END_DATE": datetime(2019, 5, 29),
             "OUTPUT_DIR": Path.cwd() / "data/NWM/nwm30_retrospective",
         }
 
@@ -92,26 +94,6 @@ class RISE:
             file_path, zarr_path, _subset_flowlines, teehr_params
         )
 
-        gdf_src = workflows.flwdir.river_source_points(
-            gdf_riv=_subset_flowlines,
-            gdf_mask=sf.region,
-            src_type="inflow",
-            buffer=200,
-            river_upa=10.0,
-            river_len=1e3,
-            da_uparea=None,
-            reverse_river_geom=False,
-            logger=sf.logger,
-        )
-        mapping_flows_order = np.array([1, 0])
-
-        buffered_lines = _subset_flowlines.copy()
-        buffered_lines["geometry"] = _subset_flowlines.geometry.buffer(50)
-        intersection = gpd.overlay(gdf_src, buffered_lines, how="intersection")
-        _subset_intersection = intersection[
-            intersection["id"].isin(["wb-2177031", "wb-2176992"])
-        ]
-
         sf.setup_config(
             **{
                 "tref": "20190520 000000",
@@ -119,16 +101,17 @@ class RISE:
                 "tstop": "20190527 000000",
             }
         )
+        source_points = ["wb-2175873", "wb-2176992"]
         time = pd.date_range(
             start=utils.parse_datetime(sf.config["tstart"]),
             end=utils.parse_datetime(sf.config["tstop"]),
-            periods=8,
+            periods=9,
         )
         dis = []
-        for _id in _subset_intersection["id"]:
-            dis.append(flood_root[_id][::24][:-1])
-        dis = np.array(dis)
-        dis = dis[mapping_flows_order].T
+        for point in source_points:
+            dis.append(flood_root[point][::24][:-1])
+        dis = np.array(dis).T
+
         index = sf.forcing["dis"].index
         dispd = pd.DataFrame(index=time, columns=index, data=dis)
         sf.setup_discharge_forcing(timeseries=dispd)
@@ -142,34 +125,6 @@ class RISE:
         log.info("Writing SFINCS model config")
         sf.write()
         log.info("Finished SFINCS model config")
-        # log.info("Running SFINCS")
-        # client = docker.from_env()
-
-        # data_dir = (Path.cwd() / "/data/SFINCS/ngwpc_data").resolve().__str__()
-        # volumes = {data_dir: {"bind": "/data", "mode": "rw"}}
-
-        # container = client.containers.run(
-        #     "deltares/sfincs-cpu:sfincs-v2.0.3-Cauberg",
-        #     volumes=volumes,
-        #     remove=True,
-        #     detach=True,
-        # )
-
-        # for line in container.logs(stream=True):
-        #     log.info(line.strip().decode('utf-8'))
-
-        # # Wait for the container to finish
-        # result = container.wait()
-
-        # # Check the exit code
-        # if result['StatusCode'] == 0:
-        #     log.info("SFINCS run completed successfully")
-        # else:
-        #     log.info(f"SFINCS run failed with exit code {result['StatusCode']}")
 
     async def process_error(self, message: AbstractIncomingMessage):
         log.error("ERROR QUEUE TRIGGERED")
-
-
-if __name__ == "__main__":
-    x = 5

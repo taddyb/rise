@@ -8,8 +8,6 @@ import zarr
 
 from src.rise.utils import hydrofabric
 
-# from teehr.loading.nwm import retrospective_points as nwm_retro
-
 
 def create_subset(
     file_path: Path, start_node: str, end_node: str
@@ -56,10 +54,27 @@ def get_event_data(
     _subset_flowlines: pd.DataFrame,
     teehr_params: Dict[str, Any],
 ) -> zarr.Group:
+    """Creates zarr arrays of NWM3.0 retrospective data
+
+    Parameters:
+    -----------
+    file_path: Path
+        The file path to the conus river network parquet file
+    zarr_path: Path
+        The path to where the zarr data should be created
+    _subset_flowlines: pd.DataFrame
+        The subset of the hydrofabric of the flowlines layer
+    teehr_params: Dict[str, Any]
+        Parameters to be input to TEEHR
+
+    Returns:
+    --------
+    zarr.Group
+        The output array data of NWM3.0 flows
+    """
     conus_df = pd.read_parquet(file_path)
     _df = conus_df[conus_df["id"].isin(_subset_flowlines["id"].values)]
     _feature_ids = _df[~np.isnan(_df["hf_id"])]
-    # feature_ids = _feature_ids["hf_id"].values.astype(int)
     mapping = {}
     for _hf_id, _id in zip(_feature_ids["hf_id"], _feature_ids["id"]):
         _mapped_features = mapping.get(_id, None)
@@ -68,18 +83,8 @@ def get_event_data(
         else:
             mapping[_id].append(_hf_id)
 
-    # Using preloaded flows
-    # nwm_retro.nwm_retro_to_parquet(
-    #     nwm_version=teehr_params["NWM_VERSION"],
-    #     variable_name=teehr_params["VARIABLE_NAME"],
-    #     start_date=teehr_params["START_DATE"],
-    #     end_date=teehr_params["END_DATE"],
-    #     location_ids=feature_ids,
-    #     output_parquet_dir=teehr_params["OUTPUT_DIR"]
-    # )
-
     flow_data = pd.read_parquet(
-        teehr_params["OUTPUT_DIR"] / "20190520_20190528.parquet"
+        teehr_params["OUTPUT_DIR"] / "20190520_20190529.parquet"
     )
     flow_data[["nwm_version", "location_id"]] = flow_data["location_id"].str.split(
         "-", expand=True
@@ -112,6 +117,13 @@ def get_event_data(
 
 
 def create_data_catalog(data_lib: str) -> None:
+    """Creating a hydromt formatted data catalog from HUC6 DEM data
+
+    Parameters:
+    -----------
+    data_lib: str
+        The location of where the data catalog will be written
+    """
     root = Path("/app/data/SFINCS/ngwpc_data/")
 
     yml_str = f"""
